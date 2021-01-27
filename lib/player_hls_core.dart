@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:helpers/helpers.dart';
 
@@ -37,13 +35,11 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
       _isGoingToCloseBufferingWidget = false;
   Timer _closeOverlayButtons, _timerPosition, _hidePlayAndPause;
 
-  //REWIND AND FORWARD
-  bool _showForwardStatus = false;
   List<bool> _showAMomentRewindIcons = [false, false];
-  int _lastPosition = 0, _forwardAmount = 0, _transitions = 0;
+  int _lastPosition = 0, _transitions = 0;
 
   //TEXT POSITION ON DRAGGING
-  // TODO ???
+  // NOTE Key
   final GlobalKey _playKey = GlobalKey();
   double _progressBarWidth = 0, _progressScale = 0, _iconPlayWidth = 0;
   bool _isDraggingProgress = false, _switchRemaingText = false;
@@ -191,13 +187,10 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
   void _showRewindAndForward(int index, int amount) async {
     _controllerSeekTo(amount);
     setState(() {
-      _forwardAmount = amount;
-      _showForwardStatus = true;
       _showAMomentRewindIcons[index] = true;
     });
     Misc.delayed(600, () {
       setState(() {
-        _showForwardStatus = false;
         _showAMomentRewindIcons[index] = false;
       });
     });
@@ -344,7 +337,6 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
     );
   }
 
-  // TODO delete?
   String _secondsFormatter(int seconds) {
     final Duration duration = Duration(seconds: seconds);
     final int hours = duration.inHours;

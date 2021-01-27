@@ -1,8 +1,6 @@
-import 'dart:developer';
-
+import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:helpers/helpers.dart';
-import 'package:flutter/material.dart';
 
 class BarProgressWidget extends StatefulWidget {
   BarProgressWidget(
@@ -100,12 +98,6 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
         }
         maxBuffering = 0;
         position = controller.value.position.inMilliseconds;
-
-        // TODO ???
-        // for (DurationRange range in controller.value.buffered) {
-        //   final int end = range.end.inMilliseconds;
-        //   if (end > maxBuffering) maxBuffering = end;
-        // }
       });
     }
   }
