@@ -12,8 +12,9 @@ class PlayerHls extends StatefulWidget {
     this.looping = false,
     this.autoPlay = true,
     this.defaultAspectRatio = 16 / 9,
+    @required this.playKey,
   });
-
+  final GlobalKey playKey;
   final VlcPlayerController source;
   final bool autoPlay;
   final bool looping;
@@ -50,6 +51,7 @@ class PlayerHlsState extends State<PlayerHls> {
       looping: widget.looping,
       controller: _controller,
       defaultAspectRatio: widget.defaultAspectRatio,
+      playKey: widget.playKey,
     );
   }
 }

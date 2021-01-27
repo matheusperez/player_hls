@@ -14,8 +14,9 @@ class PlayerHlsCore extends StatefulWidget {
     this.looping = true,
     this.defaultAspectRatio,
     this.onFullscreenFixLandscape,
+    @required this.playKey,
   });
-
+  final GlobalKey playKey;
   final bool looping;
   final double defaultAspectRatio;
   final bool onFullscreenFixLandscape;
@@ -40,7 +41,7 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
 
   //TEXT POSITION ON DRAGGING
   // NOTE Key
-  final GlobalKey _playKey = GlobalKey();
+  //final GlobalKey _playKey = GlobalKey();
   double _progressBarWidth = 0, _progressScale = 0, _iconPlayWidth = 0;
   bool _isDraggingProgress = false, _switchRemaingText = false;
   double _progressBarMargin = 0;
@@ -161,7 +162,7 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
   void _changeIconPlayWidth() {
     Misc.delayed(
       800,
-      () => setState(() => _iconPlayWidth = GetKey(_playKey).width),
+      () => setState(() => _iconPlayWidth = GetKey(widget.playKey).width),
     );
   }
 
@@ -471,7 +472,7 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
               children: [
                 _playAndPause(
                   Container(
-                    key: _playKey,
+                    key: widget.playKey,
                     padding: Margin.symmetric(
                       horizontal: padding,
                       vertical: _progressBarMargin,
@@ -481,27 +482,25 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
                         : Icon(Icons.pause, color: Colors.white),
                   ),
                 ),
-                Expanded(
-                  child: BarProgressWidget(
-                    _controller,
-                    padding: Margin.vertical(_progressBarMargin),
-                    isBuffering: _isBuffering,
-                    changePosition: (double scale, double width) {
-                      if (mounted) {
-                        if (scale != null) {
-                          setState(() {
-                            _isDraggingProgress = true;
-                            _progressScale = scale;
-                            _progressBarWidth = width;
-                          });
-                          _cancelCloseOverlayButtons();
-                        } else {
-                          setState(() => _isDraggingProgress = false);
-                          _startCloseOverlayButtons();
-                        }
+                BarProgressWidget(
+                  _controller,
+                  padding: Margin.vertical(_progressBarMargin),
+                  isBuffering: _isBuffering,
+                  changePosition: (double scale, double width) {
+                    if (mounted) {
+                      if (scale != null) {
+                        setState(() {
+                          _isDraggingProgress = true;
+                          _progressScale = scale;
+                          _progressBarWidth = width;
+                        });
+                        _cancelCloseOverlayButtons();
+                      } else {
+                        setState(() => _isDraggingProgress = false);
+                        _startCloseOverlayButtons();
                       }
-                    },
-                  ),
+                    }
+                  },
                 ),
                 SizedBox(width: padding),
                 Container(

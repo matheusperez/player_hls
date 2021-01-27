@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:helpers/helpers.dart';
@@ -105,8 +107,8 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (_, constraints) {
-      double width = constraints.maxWidth;
-
+      double width =
+          (constraints.maxWidth.isInfinite) ? 500 : constraints.maxWidth;
       return _detectTap(
         width: width,
         child: Container(
