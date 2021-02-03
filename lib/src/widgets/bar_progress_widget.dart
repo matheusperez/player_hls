@@ -97,16 +97,16 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var width = size.width * .8;
+    var width = size.width * .78;
     return _detectTap(
       width: width,
       child: Container(
-        height: 30,
+        height: 50,
         width: width,
         child: controller.value.isInitialized
             ? Container(
                 width: width,
-                height: 50,
+                // height: 50,
                 child: Stack(
                   alignment: AlignmentDirectional.centerStart,
                   children: [
