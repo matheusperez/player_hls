@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
@@ -23,19 +24,20 @@ class BarProgressWidget extends StatefulWidget {
 }
 
 class _BarProgressWidgetState extends State<BarProgressWidget> {
-  int maxBuffering = 0, duration = 0, position = 0;
+  int duration = 0, position = 0;
   VlcPlayerController controller;
   Duration seekToPosition;
   int animationMS = 500;
   bool isDragging = false;
   double height = 5;
 
+  Size get size => MediaQuery.of(context).size;
+
   @override
   void initState() {
     controller = widget.controller;
 
     controller.addListener(progressListener);
-
     if (controller.value.isInitialized) {
       duration = controller.value.duration.inMilliseconds;
     }
@@ -49,20 +51,6 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
     });
     super.initState();
   }
-
-  // @override
-  // void didUpdateWidget(BarProgressWidget oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //   if (widget.controller.hashCode != controller.hashCode) {
-  //     setState(() {
-  //       controller = widget.controller;
-  //       if (controller.value.isInitialized)
-  //         duration = controller.value.duration.inMilliseconds;
-  //     });
-  //     controller.addListener(progressListener);
-  //     progressListener();
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -98,42 +86,58 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
         if (isDragging) {
           animationMS = 0;
         }
-        maxBuffering = 0;
         position = controller.value.position.inMilliseconds;
+
+        if (duration == 0) {
+          duration = controller.value.duration.inMilliseconds;
+        }
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (_, constraints) {
-      double width =
-          (constraints.maxWidth.isInfinite) ? 500 : constraints.maxWidth;
-      return _detectTap(
+    var width = size.width * .8;
+    return _detectTap(
+      width: width,
+      child: Container(
+        height: 30,
         width: width,
-        child: Container(
-          width: width,
-          color: Colors.transparent,
-          padding: widget.padding,
-          alignment: Alignment.centerLeft,
-          child: controller.value.isInitialized
-              ? Stack(alignment: AlignmentDirectional.centerStart, children: [
-                  _progressBar(width),
-                  _progressBar((maxBuffering / duration) * width),
-                  _progressBar((position / duration) * width),
-                  _dotisDragging(width),
-                  _dotIdentifier(width),
-                ])
-              : _progressBar(width),
-        ),
-      );
-    });
+        child: controller.value.isInitialized
+            ? Container(
+                width: width,
+                height: 50,
+                child: Stack(
+                  alignment: AlignmentDirectional.centerStart,
+                  children: [
+                    _progressBar(width),
+                    _progressBar((0 / duration) * width),
+                    _progressBar((position / duration) * width),
+                    _dotisDragging(width),
+                    _dotIdentifier(width),
+                  ],
+                ),
+              )
+            : _progressBar(width),
+      ),
+    );
   }
 
   Widget _dotIdentifier(double maxWidth) => _dot(maxWidth);
   Widget _dotisDragging(double maxWidth) {
-    final double widthPos = (position / duration) * maxWidth;
+    // NOTE log
+    // print('==== LOGX 5 $position');
+    // print('==== LOGX 6 $duration');
+    // print('==== LOGX 7 $maxWidth');
+
+    double widthPos = (position / duration) * maxWidth;
+
+    widthPos = (widthPos.isInfinite || widthPos.isNaN) ? 0 : widthPos;
+
     final double widthDot = height * 2;
+    // NOTE log
+    // print('==== LOGX 3 $widthPos');
+    // print('==== LOGX 4 $widthDot');
     return BooleanTween(
       animate: isDragging &&
           (widthPos > widthDot) &&
@@ -148,9 +152,8 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
     final double widthDot = height * 2;
     final double width =
         widthPos < height ? widthDot : widthPos + height * multiplicator;
-
     return AnimatedContainer(
-      width: width,
+      width: (width.isInfinite || width.isNaN) ? 0 : width,
       duration: Duration(milliseconds: animationMS),
       alignment: Alignment.centerRight,
       child: Container(
@@ -165,8 +168,10 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
   }
 
   Widget _progressBar(double width) {
+    // NOTE log
+    //print('==== LOGX 1 $width');
     return AnimatedContainer(
-      width: width,
+      width: (width.isInfinite || width.isNaN) ? 0 : width,
       height: height,
       duration: Duration(milliseconds: animationMS),
       decoration: BoxDecoration(
@@ -177,6 +182,8 @@ class _BarProgressWidgetState extends State<BarProgressWidget> {
   }
 
   Widget _detectTap({Widget child, double width}) {
+    // NOTE log
+    //print('==== LOGX 10 $width');
     void seekToRelativePosition(Offset local, [bool showText = false]) async {
       final double localPos = local.dx / width;
       final Duration position = controller.value.duration * localPos;

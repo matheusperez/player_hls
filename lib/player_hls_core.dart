@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,6 +39,8 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
 
   List<bool> _showAMomentRewindIcons = [false, false];
   int _lastPosition = 0, _transitions = 0;
+
+  Size get size => MediaQuery.of(context).size;
 
   //TEXT POSITION ON DRAGGING
   // NOTE Key
@@ -162,7 +165,9 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
   void _changeIconPlayWidth() {
     Misc.delayed(
       800,
-      () => setState(() => _iconPlayWidth = GetKey(widget.playKey).width),
+      () => setState(
+        () => _iconPlayWidth = GetKey(widget.playKey)?.width ?? 500,
+      ),
     );
   }
 
@@ -250,8 +255,8 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
           Center(
             child: _playAndPause(
               Container(
-                width: size.width * 0.2,
-                height: size.height * 0.2,
+                width: size?.width == null ? 500 : size.width * 0.2,
+                height: size?.height == null ? 40 : size.height * 0.2,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   shape: BoxShape.circle,
@@ -383,9 +388,12 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
-              child: Icon(
-                Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
-                color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -400,6 +408,7 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
       Colors.white.withOpacity(0.2),
     ];
     return Container(
+      //width: size.width,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -429,7 +438,7 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
     return OpacityTransition(
       visible: _isDraggingProgress,
       child: Container(
-        width: width,
+        width: width ?? 500,
         child: Text(
           position,
           style: TextStyle(
@@ -463,9 +472,12 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(child: SizedBox()),
+          //   Expanded(child: SizedBox()),
+          Container(
+            height: size.height * .805,
+          ),
           _textPositionProgress(position),
           _gradientBackground(
             child: Row(
@@ -492,7 +504,7 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
                         setState(() {
                           _isDraggingProgress = true;
                           _progressScale = scale;
-                          _progressBarWidth = width;
+                          _progressBarWidth = width ?? 500;
                         });
                         _cancelCloseOverlayButtons();
                       } else {
@@ -527,6 +539,7 @@ class PlayerHlsCoreState extends State<PlayerHlsCore> {
               ],
             ),
           ),
+          //===
         ],
       ),
     );
